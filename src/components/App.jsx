@@ -1,29 +1,25 @@
-import  userData  from 'data/user.json';
-import statisticsData from 'data/data.json';
-import friendsData from 'data/friends.json';
-import transactionData from 'data/transactions.json';
-import { ThemeProvider } from 'styled-components';
-import { theme } from './utils/Theme.styled';
-import { Profile } from 'components/Profile/Profile';
-import { Statistics } from 'components/Statistics/Statistics';
-import { FriendList } from 'components/FriendList/FriendList';
-import { TransactionHistory } from 'components/TransactionHistory/TransactionHistory';
+import { Routes, Route, Navigate} from 'react-router-dom';
+import { lazy } from 'react';
+import { SharedLayout } from './SharedLayout/SharedLayout';
 
-export const App = () => {
+const Home = lazy(() => import('pages/Home/Home'));
+const Movies = lazy(() => import('pages/Movies/Movies'));
+const MovieDetails = lazy(() => import('./MoviesDetails/MoviesDetails'));
+const MovieCast = lazy(() => import('./MoviesDetails/MoviesCast/MoviesCast'));
+const MovieReviews = lazy(() => import('./MoviesDetails/MoviesReviews/MoviesReviews'));
+
+export function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Profile
-          username={userData.username}
-          tag={userData.tag}
-          location={userData.location}
-          avatar={userData.avatar}
-          stats={userData.stats}
-      />
-
-      <Statistics title="Upload stats" stats={statisticsData} />
-      <Statistics stats={statisticsData} />
-      <FriendList friends={friendsData} />
-      <TransactionHistory items={transactionData} />
-    </ThemeProvider>
+    <Routes>
+      <Route path="/" element={<SharedLayout />}>
+        <Route index element={<Home />} />
+        <Route path="movies" element={<Movies />} />
+        <Route path="movies/:movieID" element={<MovieDetails />}>
+          <Route path="cast" element={<MovieCast />} />
+          <Route path="reviews" element={<MovieReviews />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Route>
+    </Routes>
   );
-};
+}
